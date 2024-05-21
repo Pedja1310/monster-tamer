@@ -52,7 +52,6 @@ export class PreloadScene extends Phaser.Scene {
 	}
 
 	create() {
-		console.log(this.textures.get(BATTLE_BACKGROUND_ASSET_KEYS.FOREST))
 		this.add.image(0, 0, BATTLE_BACKGROUND_ASSET_KEYS.FOREST).setOrigin(0)
 	}
 }
