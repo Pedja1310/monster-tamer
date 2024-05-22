@@ -13,12 +13,18 @@ const BATTLE_UI_TEXT_STYLES = {
 };
 
 export class BattleMenu {
+	/** @type {Phaser.Scene} */
 	#scene;
+	/** @type {Phaser.GameObjects.Container} */
 	#mainBattleMenuPhaserContainerGameObject;
+	/** @type {Phaser.GameObjects.Container} */
 	#moveSelectionSubBattleMenuPhaserContainerGameObject;
+	/** @type {Phaser.GameObjects.Text} */
 	#battleTextGameObjectLine1;
+	/** @type {Phaser.GameObjects.Text} */
 	#battleTextGameObjectLine2;
 
+	/** @param {Phaser.Scene} scene Phaser 3 scene where battle menu will be added. */
 	constructor(scene) {
 		this.#scene = scene;
 
