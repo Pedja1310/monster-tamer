@@ -5,12 +5,15 @@ import {
 	MONSTER_ASSET_KEYS,
 } from "../asstes/asset-keys.js";
 import { BattleMenu } from "../battle/ui/menu/battle-menu.js";
+import { DIRECTION } from "../common/direction.js";
 import Phaser from "../lib/phaser.js";
 import { SCENE_KEYS } from "./scene-keys.js";
 
 export class BattleScene extends Phaser.Scene {
 	/**  @type {BattleMenu} */
 	#battleMenu;
+	/**  @type {Phaser.Types.Input.Keyboard.CursorKeys} */
+	#cursorKeys;
 
 	constructor() {
 		super({ key: SCENE_KEYS.BATTLE_SCENE });
@@ -35,7 +38,7 @@ export class BattleScene extends Phaser.Scene {
 		this.add.container(556, 318, [
 			this.add.image(0, 0, BATTLE_ASSET_KEYS.HEALTH_BAR_BACKGROUND).setOrigin(0),
 			playerMonsterName,
-			this.#createHealth(34, 34),
+			this.#createHealthBar(34, 34),
 			this.add.text(playerMonsterName.width + 35, 23, "L5", {
 				color: "#ed474b",
 				fontSize: "28px",
@@ -62,7 +65,7 @@ export class BattleScene extends Phaser.Scene {
 		this.add.container(0, 0, [
 			this.add.image(0, 0, BATTLE_ASSET_KEYS.HEALTH_BAR_BACKGROUND).setOrigin(0).setScale(1, 0.8),
 			enemyMonssterName,
-			this.#createHealth(34, 34),
+			this.#createHealthBar(34, 34),
 			this.add.text(enemyMonssterName.width + 35, 23, "L5", {
 				color: "#ed474b",
 				fontSize: "28px",
@@ -77,9 +80,47 @@ export class BattleScene extends Phaser.Scene {
 		// render out the main info and sub info panes
 		this.#battleMenu = new BattleMenu(this);
 		this.#battleMenu.showMainBattleMenu();
+
+		// TODO: Reverence EP 12 comments for escape key fix and WASD movement keys
+		this.#cursorKeys = this.input.keyboard.createCursorKeys();
 	}
 
-	#createHealth(x, y) {
+	update() {
+		const wasScpaceKeyPressed = Phaser.Input.Keyboard.JustDown(this.#cursorKeys.space);
+
+		if (wasScpaceKeyPressed) {
+			this.#battleMenu.handlePlayerInput("OK");
+		}
+
+		if (Phaser.Input.Keyboard.JustDown(this.#cursorKeys.shift)) {
+			this.#battleMenu.handlePlayerInput("CANCEL");
+		}
+
+		/** @type {import('../common/direction.js').Direction}*/
+		let selectedDirection = DIRECTION.NONE;
+
+		if (this.#cursorKeys.left.isDown) {
+			selectedDirection = DIRECTION.LEFT;
+		} else if (this.#cursorKeys.right.isDown) {
+			selectedDirection = DIRECTION.RIGHT;
+		} else if (this.#cursorKeys.up.isDown) {
+			selectedDirection = DIRECTION.UP;
+		} else if (this.#cursorKeys.down.isDown) {
+			selectedDirection = DIRECTION.DOWN;
+		}
+
+		if (selectedDirection !== DIRECTION.NONE) {
+			this.#battleMenu.handlePlayerInput(selectedDirection);
+		}
+	}
+
+	/**
+	 * @param {number} x the x position to place the x bar container
+	 * @param {number} y the y position to place the y bar container
+	 * @returns {Phaser.GameObjects.Container}
+	 */
+
+	#createHealthBar(x, y) {
 		const scaleY = 0.7;
 
 		const leftCap = this.add.image(x, y, HEALTH_BAR_ASSET_KEYS.LEFT_CAP).setOrigin(0, 0.5).setScale(1, scaleY);
